@@ -1,0 +1,2 @@
+# TradingStrategies
+Algorithmic trading strategies
