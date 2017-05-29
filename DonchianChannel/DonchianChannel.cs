@@ -166,7 +166,7 @@ namespace DonchianChannel
                     Thickness = 3
                 },
 
-                new AnalyzerIndicator(new Highest((int) (Parameter(2)*Parameter(1)*0.01m)), AnalyzerValue.Candle, 0)
+                new AnalyzerIndicator(new Highest((int) Parameter(1)/2), AnalyzerValue.Candle, 0)
                 {
                     Name = "UpperChannelTwo",
                     Style = IndicatorStyle.Line,
@@ -174,7 +174,7 @@ namespace DonchianChannel
                     Thickness = 2
                 },
 
-                new AnalyzerIndicator(new Lowest((int) (Parameter(2)*Parameter(1)*0.01m)), AnalyzerValue.Candle, 0)
+                new AnalyzerIndicator(new Lowest((int) Parameter(1)/2), AnalyzerValue.Candle, 0)
                 {
                     Name = "LowerChannelTwo",
                     Style = IndicatorStyle.Line,

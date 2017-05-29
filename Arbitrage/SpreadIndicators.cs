@@ -16,12 +16,19 @@ namespace Arbitrage
     {
         private decimal _lastValue = Default;
 
+        private readonly decimal _volume;
+
+        public FuturesSpreadOnTicks(decimal volume)
+        {
+            _volume = volume;
+        }
+
         protected override void OnReset(){ }
 
         protected override decimal OnAdd(Trade tick)
         {
             if (tick.Security.InitialMargin > 0)
-                _lastValue = tick.Price;
+                _lastValue = tick.Price*_volume;
 
             return _lastValue;
         }
@@ -31,12 +38,19 @@ namespace Arbitrage
     {
         private decimal _lastValue = Default;
 
+        private readonly decimal _volume;
+
+        public StockSpreadOnTicks(decimal volume)
+        {
+            _volume = volume;
+        }
+
         protected override void OnReset() { }
 
         protected override decimal OnAdd(Trade tick)
         {
             if (tick.Security.InitialMargin == 0)
-                _lastValue = tick.Price * tick.Security.LotSize;
+                _lastValue = tick.Price * tick.Security.LotSize* _volume;
 
             return _lastValue;
         }
@@ -46,12 +60,19 @@ namespace Arbitrage
     {
         private decimal _lastValue = Default;
 
+        private readonly decimal _volume;
+
+        public FuturesSpreadOnCandles(decimal volume)
+        {
+            _volume = volume;
+        }
+
         protected override void OnReset() { }
 
         protected override decimal OnAdd(Candle candle)
         {
             if (candle.Security.InitialMargin > 0)
-                _lastValue = candle.ClosePrice;
+                _lastValue = candle.ClosePrice*_volume;
 
             return _lastValue;
         }
@@ -61,12 +82,19 @@ namespace Arbitrage
     {
         private decimal _lastValue = Default;
 
+        private readonly decimal _volume;
+
+        public StockSpreadOnCandles(decimal volume)
+        {
+            _volume = volume;
+        }
+
         protected override void OnReset() { }
 
         protected override decimal OnAdd(Candle candle)
         {
             if (candle.Security.InitialMargin == 0)
-                _lastValue = candle.ClosePrice * candle.Security.LotSize;
+                _lastValue = candle.ClosePrice * candle.Security.LotSize* _volume;
 
             return _lastValue;
         }

@@ -4,10 +4,10 @@
 
 ### TRADING STRATEGIES:
 - **Arbitrage**
-- **Donchian Channels**
-- **Turtle Trades**
-- **Simple Moving Average**
 - **Bollinger Bands**
+- **Donchian Channel**
+- **Simple Moving Average**
+- **Turtle Trades**
 
 ### [ABOUT][about]
 

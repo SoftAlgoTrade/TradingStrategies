@@ -73,7 +73,7 @@ namespace Arbitrage
 
         private ConnectorName _conName;
 
-        private int _volumeStock;
+        private int _volumeStocks;
         private int _volumeFutures;
 
         private Security _futures;
@@ -128,7 +128,7 @@ namespace Arbitrage
                 _offsetStock = _stock.Tick * (int)Parameter(4);
 
                 //Объем заявки
-                _volumeStock = (int) Parameter(5);
+                _volumeStocks = (int) Parameter(5);
                 _volumeFutures = (int) Parameter(6);
 
                 //Подписываемся на события при инициализации стратегии
@@ -219,14 +219,14 @@ namespace Arbitrage
                     Style = IndicatorStyle.Point,
                     Thickness = 2
                 },
-                new AnalyzerIndicator(new FuturesSpreadOnTicks(), AnalyzerValue.Trade, 1)
+                new AnalyzerIndicator(new FuturesSpreadOnTicks(_volumeFutures), AnalyzerValue.Trade, 1)
                 {
                     Name = "Futures Spread",
                     Stroke = Colors.Violet,
                     Style = IndicatorStyle.Line,
                     Thickness = 2
                 },
-                new AnalyzerIndicator(new StockSpreadOnTicks(), AnalyzerValue.Trade, 1)
+                new AnalyzerIndicator(new StockSpreadOnTicks(_volumeStocks), AnalyzerValue.Trade, 1)
                 {
                     Name = "Stock Spread",
                     Stroke = Colors.LightGreen,
@@ -283,14 +283,14 @@ namespace Arbitrage
                     Style = IndicatorStyle.Point,
                     Thickness = 2
                 },
-                new AnalyzerIndicator(new FuturesSpreadOnCandles(), AnalyzerValue.Candle, 1)
+                new AnalyzerIndicator(new FuturesSpreadOnCandles(_volumeFutures), AnalyzerValue.Candle, 1)
                 {
                     Name = "Futures Spread",
                     Stroke = Colors.Violet,
                     Style = IndicatorStyle.Line,
                     Thickness = 2
                 },
-                new AnalyzerIndicator(new StockSpreadOnCandles(), AnalyzerValue.Candle, 1)
+                new AnalyzerIndicator(new StockSpreadOnCandles(_volumeStocks), AnalyzerValue.Candle, 1)
                 {
                     Name = "Stock Spread",
                     Stroke = Colors.LightGreen,
@@ -454,7 +454,7 @@ namespace Arbitrage
                 {
                     Type = OrderType.Limit,
                     Direction = directionStock,
-                    Volume = _volumeStock,
+                    Volume = _volumeStocks,
                     Price = stockPrice,
                     Comment = comment
                 };

@@ -139,23 +139,39 @@ namespace TurtleTraders
         {
             return new List<AnalyzerIndicator>
             {
-              new AnalyzerIndicator(new Highest((int)Parameter(1)), AnalyzerValue.Candle, 0)
+                new AnalyzerIndicator(new Highest((int) Parameter(1)), AnalyzerValue.Candle, 0)
                 {
-                    Name = "Highest",
+                    Name = "UpperChannelOne",
                     Style = IndicatorStyle.Line,
                     Stroke = Colors.OrangeRed,
                     Thickness = 3
                 },
 
-                new AnalyzerIndicator(new Lowest((int)Parameter(1)), AnalyzerValue.Candle, 0)
+                new AnalyzerIndicator(new Lowest((int) Parameter(1)), AnalyzerValue.Candle, 0)
                 {
-                    Name = "Lowest",
+                    Name = "LowerChannelOne",
                     Style = IndicatorStyle.Line,
                     Stroke = Colors.DeepSkyBlue,
                     Thickness = 3
                 },
 
-                new AnalyzerIndicator(new ATR((int)Parameter(3)), AnalyzerValue.Candle, 1)
+                new AnalyzerIndicator(new Highest((int) (Parameter(2)*Parameter(1)*0.01m)), AnalyzerValue.Candle, 0)
+                {
+                    Name = "UpperChannelTwo",
+                    Style = IndicatorStyle.Line,
+                    Stroke = Colors.Red,
+                    Thickness = 2
+                },
+
+                new AnalyzerIndicator(new Lowest((int) (Parameter(2)*Parameter(1)*0.01m)), AnalyzerValue.Candle, 0)
+                {
+                    Name = "LowerChannelTwo",
+                    Style = IndicatorStyle.Line,
+                    Stroke = Colors.Blue,
+                    Thickness = 2
+                },
+
+                new AnalyzerIndicator(new ATR((int) Parameter(3)), AnalyzerValue.Candle, 1)
                 {
                     Name = "ATR",
                     Style = IndicatorStyle.Histogram,
