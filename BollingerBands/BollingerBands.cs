@@ -27,11 +27,16 @@ namespace BollingerBands
     // Индикаторы:
     // Линии Боллинджера - BollingerBandsTop, BollingerBandsBottom
 
+    // Опции: 
+    // - Добавлен вывод на график точек входа/выхода со смещением для визуального анализа
     public class BollingerBands : IStrategy
     {
         private BollingerBandsTop _top;
         private BollingerBandsBottom _bottom;
         private int _volume;
+
+        private CustomAnalyzerIndicator _customValuesBuy;
+        private CustomAnalyzerIndicator _customValuesSell;
 
         public override void Initialization()
         {
@@ -50,7 +55,6 @@ namespace BollingerBands
                     if (state == StrategyState.NotActivated)
                     {
                         _top.Reset();
-                        //_average.Reset();
                         _bottom.Reset();
                     }
                 };
@@ -76,14 +80,13 @@ namespace BollingerBands
         }
 
         //Индикаторы для отрисовки в Analyzer
-        public override List<AnalyzerIndicator> AnalyzerIndicators()
+        public override List<BaseAnalyzerIndicator> AnalyzerIndicators()
         {
-            return new List<AnalyzerIndicator>
+            var indicators = new List<BaseAnalyzerIndicator>
             {
                 new AnalyzerIndicator(new BollingerBandsTop((int) Parameter(1), (int) Parameter(2)), AnalyzerValue.CandleClosePrice, 0)
                 {
                     Name = "Top",
-                    Style = IndicatorStyle.Point,
                     Stroke = Colors.Blue,
                     Thickness = 2
                 },
@@ -91,19 +94,35 @@ namespace BollingerBands
                 new AnalyzerIndicator(new BollingerBandsAverage((int) Parameter(1)), AnalyzerValue.CandleClosePrice, 0)
                 {
                     Name = "Average",
-                    Style = IndicatorStyle.Point,
                     Stroke = Colors.Red,
                     Thickness = 2
                 },
 
-                 new AnalyzerIndicator(new BollingerBandsBottom((int) Parameter(1), (int) Parameter(2)), AnalyzerValue.CandleClosePrice, 0)
+                new AnalyzerIndicator(new BollingerBandsBottom((int) Parameter(1), (int) Parameter(2)), AnalyzerValue.CandleClosePrice, 0)
                 {
                     Name = "Bottom",
-                    Style = IndicatorStyle.Point,
                     Stroke = Colors.Blue,
                     Thickness = 2
                 }
             };
+
+            indicators.Add(_customValuesBuy = new CustomAnalyzerIndicator("BUY ORDER", 0)
+            {
+                Stroke = Colors.PaleGreen,
+                Style = IndicatorStyle.Point,
+                Thickness = 2,
+                RadiusPoint = 15
+            });
+
+            indicators.Add(_customValuesSell = new CustomAnalyzerIndicator("SELL ORDER", 0)
+            {
+                Stroke = Colors.OrangeRed,
+                Style = IndicatorStyle.Point,
+                Thickness = 2,
+                RadiusPoint = 15
+            });
+
+            return indicators;
         }
 
         private void ProcessCandle(Candle candle)
@@ -123,7 +142,7 @@ namespace BollingerBands
 
                 //Текущая позиция по выбранному коннектору и инструменту
                 var position = GetTradeInfo().Position;
-                
+
                 if (candle.ClosePrice <= bottom && position <= 0)
                 {
                     var limitOrder = new Order
@@ -133,11 +152,13 @@ namespace BollingerBands
                         Volume = position < 0 ? -position : _volume, //Закрываем полностью позицию или открываем новую
                         Price = candle.ClosePrice
                     };
-                    
+
+                    _customValuesBuy.Add(candle.CloseTime, (double)(limitOrder.Price + GetSecurity().Tick * 25), $"BUY ORDER\nTime: {candle.CloseTime.ToString("dd.MM.yyyy HH:mm:ss.fff")}\nVolume: {limitOrder.Volume}");
+
                     //Отправляем лимитную заявку на регистрацию
                     RegisterOrder(limitOrder);
                 }
-                
+
                 if (candle.ClosePrice >= top && position >= 0)
                 {
                     var limitOrder = new Order
@@ -147,6 +168,8 @@ namespace BollingerBands
                         Volume = position < 0 ? -position : _volume,
                         Price = candle.ClosePrice
                     };
+
+                    _customValuesSell.Add(candle.CloseTime, (double) (limitOrder.Price - GetSecurity().Tick*25), $"SELL ORDER\nTime: {candle.CloseTime.ToString("dd.MM.yyyy HH:mm:ss.fff")}\nVolume: {limitOrder.Volume}");
 
                     //Отправляем лимитную заявку на регистрацию
                     RegisterOrder(limitOrder);

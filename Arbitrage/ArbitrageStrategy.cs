@@ -198,12 +198,12 @@ namespace Arbitrage
             };
         }
 
-        public override List<AnalyzerIndicator> AnalyzerIndicators() => HistoricalDataType == HistoricalDataType.Ticks ? TickIndicators() : CandlesIndicators();
+        public override List<BaseAnalyzerIndicator> AnalyzerIndicators() => HistoricalDataType == HistoricalDataType.Ticks ? TickIndicators() : CandlesIndicators();
 
         //Индикаторы для отрисовки на тиках
-        private List<AnalyzerIndicator> TickIndicators()
+        private List<BaseAnalyzerIndicator> TickIndicators()
         {
-            return new List<AnalyzerIndicator>
+            return new List<BaseAnalyzerIndicator>
             {
                 new AnalyzerIndicator(new FuturesPriceOnTicks(), AnalyzerValue.Trade, 0)
                 {
@@ -265,9 +265,9 @@ namespace Arbitrage
         }
 
         //Индикаторы для отрисовки на свечках
-        private List<AnalyzerIndicator> CandlesIndicators()
+        private List<BaseAnalyzerIndicator> CandlesIndicators()
         {
-            return new List<AnalyzerIndicator>
+            return new List<BaseAnalyzerIndicator>
             {
                 new AnalyzerIndicator(new FuturesPriceOnCandles(), AnalyzerValue.Candle, 0)
                 {

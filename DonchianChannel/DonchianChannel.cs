@@ -146,9 +146,9 @@ namespace DonchianChannel
         }
 
         //Индикаторы для отрисовки в Analyzer
-        public override List<AnalyzerIndicator> AnalyzerIndicators()
+        public override List<BaseAnalyzerIndicator> AnalyzerIndicators()
         {
-            return new List<AnalyzerIndicator>
+            return new List<BaseAnalyzerIndicator>
             {
                 new AnalyzerIndicator(new Highest((int) Parameter(1)), AnalyzerValue.Candle, 0)
                 {
