@@ -54,9 +54,6 @@ namespace Arbitrage
 
     // Внимание! Обязательно прописываем вышеуказанные параметры в настройках инструментов!
 
-    // Внимание! При тестировании на тиках стратегия совершает очень много сделок, соответственно на график выводится много аннотаций.
-    // Возможно временное подвисание интерфейса, поэтому рекомендуется отключить вывод аннотаций или указывать диапазон тестирования на тиках 1-2 дня.
-
     public class ArbitrageStrategy : IStrategy
     {
         //Индикаторы работающие на тиках 
@@ -90,6 +87,7 @@ namespace Arbitrage
         private bool _filledFutures;
         private bool _filledStock;
 
+        //Инициализация стратегии
         public override void Initialization()
         {
             try
@@ -328,6 +326,7 @@ namespace Arbitrage
             };
         }
 
+        //Логика торговой стратегии на тиках
         private void ProcessOnTicks(Trade tick)
         {
             try
@@ -354,6 +353,7 @@ namespace Arbitrage
             }
         }
 
+        //Логика торговой стратегии на свечках
         private void ProcessOnCandles(Candle candle)
         {
             try

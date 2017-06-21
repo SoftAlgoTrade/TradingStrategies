@@ -6,6 +6,7 @@
 - **Arbitrage**
 - **Bollinger Bands**
 - **Donchian Channel**
+- **Quoting Strategy**
 - **Simple Moving Average**
 - **Turtle Trades**
 

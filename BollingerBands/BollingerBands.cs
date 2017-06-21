@@ -29,6 +29,7 @@ namespace BollingerBands
 
     // Опции: 
     // - Добавлен вывод на график точек входа/выхода со смещением для визуального анализа
+
     public class BollingerBands : IStrategy
     {
         private BollingerBandsTop _top;
@@ -38,6 +39,7 @@ namespace BollingerBands
         private CustomAnalyzerIndicator _customValuesBuy;
         private CustomAnalyzerIndicator _customValuesSell;
 
+        //Инициализация стратегии
         public override void Initialization()
         {
             try
@@ -125,6 +127,7 @@ namespace BollingerBands
             return indicators;
         }
 
+        //Логика торговой стратегии
         private void ProcessCandle(Candle candle)
         {
             try

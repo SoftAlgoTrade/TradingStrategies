@@ -16,6 +16,39 @@ using SAT.Trading;
 
 namespace TurtleTraders
 {
+    // Описание:
+    // За основу взята стратегия Черепах - http://www.benvanvliet.net/Downloads/turtlerules.pdf
+    // Описание модификации - https://support.softalgotrade.com/forums/topic/turtle-system-revisited
+
+    // Исходные данные: свечки или тики. Рассмотрены оба варианта.
+    // Свечки используются для расчета индикаторов.
+    // Для более точного входа в позицию и расчета стоп заявок можем использовать тики.
+
+    // Алгоритм:
+    // Строится два канала Дончиана - ChannelOne и ChannelTwo. Канал Дончиана - это пара индикаторов Highest и Lowest.
+    // Период внутреннего канала ChannelTwo устанавливаем в процентах относительно внешнего канала ChannelOne.
+    // Входим в позицию:
+    // - Покупаем, когда цена касается канала UpperChannelOne.
+    // - Продаем, когда цена касается канала LowerChannelOne.
+    // Закрываем позицию:
+    // - Покупаем, когда цена касается канала UpperChannelTwo.
+    // - Продаем, когда цена касается канала LowerChannelTwo.
+
+    // Дополнительно:
+    // 1) Стратегия интрадей. Торгуем с 10:05, в конце торговой сессии (23:40) закрываем все открытые позиции - метод CheckIntraDayTime().
+    // 2) При входе/выходе ориентируемся на риск, который рассчитываем по формуле: risk = k * atr,
+    // Где к - коэффициент риска, atr - текущее значение индикатора ATR.
+    // 3) Для расчета стоп заявок используем соответствующие методы MarkуtToMarket для тиков и свечек.
+    // 4) Объем входа в позицию рассчитываем по формуле:
+    // Volume = Math.Min(currentFunds * riskPerTrade / risk, currentFunds / initialMargin), 
+    // Где currentFunds - текущие доступные денежные средства, initialMargin - гарантийное обеспечение
+    // riskPerTrade - процент риска, risk - риск (см. выше).
+    // 5) Все лимитные заявки выставляем "глубоко в рынок" для мгновенного исполнения как маркет.
+
+    // Индикаторы:
+    // Две пары индикаторов Highest и Lowest - два канала Дончиана.
+    // Индикатор ATR (Average True Range) - для расчета риска.
+
     public class TurtleTraders : IStrategy
     {
         private Highest _upperChannelOne;
@@ -33,39 +66,7 @@ namespace TurtleTraders
         private bool _filled = true;
         private decimal _offset;
 
-        // Описание:
-        // За основу взята стратегия Черепах - http://www.benvanvliet.net/Downloads/turtlerules.pdf
-        // Описание модификации - https://support.softalgotrade.com/forums/topic/turtle-system-revisited
-
-        // Исходные данные: свечки или тики. Рассмотрены оба варианта.
-        // Свечки используются для расчета индикаторов.
-        // Для более точного входа в позицию и расчета стоп заявок можем использовать тики.
-
-        // Алгоритм:
-        // Строится два канала Дончиана - ChannelOne и ChannelTwo. Канал Дончиана - это пара индикаторов Highest и Lowest.
-        // Период внутреннего канала ChannelTwo устанавливаем в процентах относительно внешнего канала ChannelOne.
-        // Входим в позицию:
-        // - Покупаем, когда цена касается канала UpperChannelOne.
-        // - Продаем, когда цена касается канала LowerChannelOne.
-        // Закрываем позицию:
-        // - Покупаем, когда цена касается канала UpperChannelTwo.
-        // - Продаем, когда цена касается канала LowerChannelTwo.
-
-        // Дополнительно:
-        // 1) Стратегия интрадей. Торгуем с 10:05, в конце торговой сессии (23:40) закрываем все открытые позиции - метод CheckIntraDayTime().
-        // 2) При входе/выходе ориентируемся на риск, который рассчитываем по формуле: risk = k * atr,
-        // Где к - коэффициент риска, atr - текущее значение индикатора ATR.
-        // 3) Для расчета стоп заявок используем соответствующие методы MarkуtToMarket для тиков и свечек.
-        // 4) Объем входа в позицию рассчитываем по формуле:
-        // Volume = Math.Min(currentFunds * riskPerTrade / risk, currentFunds / initialMargin), 
-        // Где currentFunds - текущие доступные денежные средства, initialMargin - гарантийное обеспечение
-        // riskPerTrade - процент риска, risk - риск (см. выше).
-        // 5) Все лимитные заявки выставляем "глубоко в рынок" для мгновенного исполнения как маркет.
-
-        // Индикаторы:
-        // Две пары индикаторов Highest и Lowest - два канала Дончиана.
-        // Индикатор ATR (Average True Range) - для расчета риска.
-
+        //Инициализация стратегии
         public override void Initialization()
         {
             try
@@ -181,6 +182,7 @@ namespace TurtleTraders
             };
         }
 
+        //Сброс индикаторов
         private void ResetIndicators()
         {
             _upperChannelOne.Reset();
@@ -189,6 +191,7 @@ namespace TurtleTraders
             _lowerChannelTwo.Reset();
             _atr.Reset();
         }
+
 
         //Test on Ticks
         private void ProcessCandleTicks(Candle candle)
