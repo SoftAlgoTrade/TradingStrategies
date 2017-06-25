@@ -63,6 +63,7 @@ namespace DonchianChannel
 
         private AlgoStopOrders _algoStopOrders;
 
+        //Инициализация стратегии
         public override void Initialization()
         {
             try
@@ -146,9 +147,9 @@ namespace DonchianChannel
         }
 
         //Индикаторы для отрисовки в Analyzer
-        public override List<AnalyzerIndicator> AnalyzerIndicators()
+        public override List<BaseAnalyzerIndicator> AnalyzerIndicators()
         {
-            return new List<AnalyzerIndicator>
+            return new List<BaseAnalyzerIndicator>
             {
                 new AnalyzerIndicator(new Highest((int) Parameter(1)), AnalyzerValue.Candle, 0)
                 {
@@ -208,6 +209,7 @@ namespace DonchianChannel
             };
         }
 
+        //Сброс индикаторов
         private void ResetIndicators()
         {
             _upperChannelOne.Reset();
@@ -218,6 +220,7 @@ namespace DonchianChannel
             _atr.Reset();
         }
 
+        //Логика торговой стратегии
         public void ProcessCandle(Candle candle)
         {
             try

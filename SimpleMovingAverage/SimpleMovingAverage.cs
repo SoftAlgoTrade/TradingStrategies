@@ -51,6 +51,7 @@ namespace SimpleMovingAverage
         private AlgoStopOrders _algoStopOrders;
         private AlgoCancelOrderByTimer _algoCancelOrdersByTimer;
 
+        //Инициализация стратегии
         public override void Initialization()
         {
             try
@@ -163,9 +164,9 @@ namespace SimpleMovingAverage
         }
 
         //Индикаторы для отрисовки в Analyzer
-        public override List<AnalyzerIndicator> AnalyzerIndicators()
+        public override List<BaseAnalyzerIndicator> AnalyzerIndicators()
         {
-            return new List<AnalyzerIndicator>
+            return new List<BaseAnalyzerIndicator>
             {
                 new AnalyzerIndicator(new SMA((int) Parameter(1)), AnalyzerValue.CandleClosePrice, 0)
                 {
@@ -183,6 +184,7 @@ namespace SimpleMovingAverage
             };
         }
 
+        //Логика торговой стратегии
         private void ProcessCandle(Candle candle)
         {
             try
@@ -288,7 +290,7 @@ namespace SimpleMovingAverage
             }
         }
 
-        //Обпаботка алгоритмических заявок
+        //Обработка алгоритмических заявок
         private void CheckAlgoOrders(Order order, decimal pos)
         {
             //Снимаем все алгоритмические стоп заявки, если вышли из позиции и по условиям состояния заявки
