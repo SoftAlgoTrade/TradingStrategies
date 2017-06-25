@@ -60,17 +60,20 @@ namespace SimpleMovingAverage
                 _longSma = new SMA((int)Parameter(1));
                 _shortSma = new SMA((int)Parameter(2));
 
+                //Отступ для лимитной заявки
+                _offset = Parametr(3);
+
                 //Отступ для стоп заявки
-                _stopOrderOffset = Parameter(3);
+                _stopOrderOffset = Parameter(4);
 
                 //Тип стоп заявки - трейлинг (1 - True, 0 - False)
-                _isTrailing = (int)Parameter(4) == 1;
+                _isTrailing = (int)Parameter(5) == 1;
 
                 //Величина смещения цены для исполнения лимитных заявок как рыночных
-                _offset = GetSecurity().Tick * (int)Parameter(5);
+                _offset = GetSecurity().Tick * (int)Parameter(6);
 
                 //Объем заявки
-                _volume = (int)Parameter(6);
+                _volume = (int)Parameter(7);
 
                 //Подписываемся на события при инициализации стратегии
                 Subscribe();
@@ -155,6 +158,7 @@ namespace SimpleMovingAverage
             {
                 new Parameter("Long", 100, 80, 400, 10) {Comment = "Period Long/Slow SMA indicator"},
                 new Parameter("Short", 50, 10, 100, 5) {Comment = "Period Short/Fast SMA indicator"},
+                new Parameter("Entry Limit order offset", 50, 20, 70, 10) {Comment = "Entry Limit order offset in points"},
                 new Parameter("Stop order offset", 50, 20, 70, 10) {Comment = "Stop order offset in points"},
                 new Parameter("Stop order is trailing", 0) {Comment = "1 - True, 0 - False"},
                 new Parameter("Offset for execution limit orders as market", 5) {Comment = "Example: Offset = Security.Tick * 5, 5 - value"},
@@ -215,7 +219,7 @@ namespace SimpleMovingAverage
                         Type = OrderType.Limit,
                         Direction = Direction.Buy,
                         Volume = position < 0 ? -position : _volume, //Закрываем полностью позицию или открываем новую
-                        Price = candle.ClosePrice
+                        Price = candle.ClosePrice + _offset
                     };
 
                     //Подписываемся на событие изменения заявки
@@ -252,7 +256,7 @@ namespace SimpleMovingAverage
                         Type = OrderType.Limit,
                         Direction = Direction.Sell,
                         Volume = position < 0 ? -position : _volume,
-                        Price = candle.ClosePrice
+                        Price = candle.ClosePrice - _offset
                     };
 
                     //Подписываемся на событие изменения заявки
