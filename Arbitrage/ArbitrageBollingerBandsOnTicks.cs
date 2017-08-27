@@ -30,12 +30,12 @@ namespace Arbitrage
             _bollingerBandsTop.Reset();
         }
 
-        protected override decimal OnAdd(Trade tick)
+        protected override decimal OnAdd(Trade value)
         {
-            if (tick.Security.InitialMargin > 0)
-                _futures = tick.Price;
+            if (value.Security.InitialMargin > 0)
+                _futures = value.Price;
             else
-                _stock = tick.Price * tick.Security.LotSize;
+                _stock = value.Price * value.Security.LotSize;
 
             if (_stock != 0 && _futures != 0)
                 return _bollingerBandsTop.Add(_futures - _stock);
@@ -61,12 +61,12 @@ namespace Arbitrage
             _bollingerBandsAverage.Reset();
         }
 
-        protected override decimal OnAdd(Trade tick)
+        protected override decimal OnAdd(Trade value)
         {
-            if (tick.Security.InitialMargin > 0)
-                _futures = tick.Price;
+            if (value.Security.InitialMargin > 0)
+                _futures = value.Price;
             else
-                _stock = tick.Price*tick.Security.LotSize;
+                _stock = value.Price*value.Security.LotSize;
 
             if (_stock != 0 && _futures != 0)
                 return _bollingerBandsAverage.Add(_futures - _stock);
@@ -92,12 +92,12 @@ namespace Arbitrage
             _bollingerBandsBottom.Reset();
         }
 
-        protected override decimal OnAdd(Trade tick)
+        protected override decimal OnAdd(Trade value)
         {
-            if (tick.Security.InitialMargin > 0)
-                _futures = tick.Price;
+            if (value.Security.InitialMargin > 0)
+                _futures = value.Price;
             else
-                _stock = tick.Price * tick.Security.LotSize;
+                _stock = value.Price * value.Security.LotSize;
 
             if (_stock != 0 && _futures != 0)
                 return _bollingerBandsBottom.Add(_futures - _stock);

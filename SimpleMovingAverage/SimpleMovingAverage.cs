@@ -135,12 +135,30 @@ namespace SimpleMovingAverage
         {
             //Используем алгоритмические стоп заявки
             _algoStopOrders = new AlgoStopOrders();
-            //Регистрируем лимитные заявки сгенерированные алгоритмическими стоп заявками
-            _algoStopOrders.LimitOrder += limitOrder => RegisterOrder(limitOrder);
+            //Выводим в лог сообщение об активации алгоритмической стоп заявки
+            _algoStopOrders.Activated += (id, stopPrice) => MessageToLog($"Activated Stop Order ID{id} - Stop Price {stopPrice}");
             //Выводим в лог сообщение о снятии алгоритмической стоп заявки
-            _algoStopOrders.Cancelled += orderId => MessageToLog($"Algo stop order ID{orderId} cancelled");
+            _algoStopOrders.Cancelled += (stopPrice, id) => MessageToLog($"Cancelled Stop Order ID{id} - StopPrice {stopPrice}");
             //Выводим в лог сообщение об изменеии трейлинг стоп заявки
-            _algoStopOrders.OrderChanged += (orderId, stopPrice, price) => MessageToLog($"Trailing stop ID{orderId} changed - stop price {stopPrice}, order price {price}");
+            _algoStopOrders.TrailingPriceChanged += (id, stopPrice, price) => MessageToLog($"Trailing Price Changed Stop Order ID{id} - stop price {stopPrice}, order price {price}");
+            //Алгоритмическая стоп-заявка исполнилась
+            _algoStopOrders.Filled += (price, volume, direction, comment, id) =>
+            {
+                MessageToLog($"Filled Stop Order ID{id} - {direction}, {comment}");
+
+                //Создаем лимитную заявку для закрытия позиции
+                var limitOrder = new Order
+                {
+                    Type = OrderType.Limit,
+                    Direction = direction,
+                    Volume = volume,
+                    Price = price,
+                    Comment = comment
+                };
+
+                //Закрываем позицию
+                RegisterOrder(limitOrder);
+            };
 
             //Используем алгоритмическое снятие лимитных заявок по таймеру
             _algoCancelOrdersByTimer = new AlgoCancelOrderByTimer(this, TimeSpan.FromMilliseconds(TimeFrame.TotalMilliseconds * (int)Parameter(7)));
@@ -227,7 +245,7 @@ namespace SimpleMovingAverage
                         //Если заявка исполнилась, то защищаем ее алгоритмической стоп заявкой
                         if (order.State == OrderState.Filled && pos != 0)
                         {
-                            var stopOrderId = _algoStopOrders.Create(order, order.Price - _stopOrderOffset, order.Price - _stopOrderOffset - _offset, _isTrailing);
+                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, order.Price - _stopOrderOffset, order.Price - _stopOrderOffset - _offset, _isTrailing);
                             MessageToLog($"Algo stop order ID{stopOrderId} - stop price {order.Price - _stopOrderOffset}, order price {order.Price - _stopOrderOffset - _offset}");
                         }
 
@@ -264,7 +282,7 @@ namespace SimpleMovingAverage
                         //Если заявка исполнилась, то защищаем ее алгоритмической стоп заявкой
                         if (order.State == OrderState.Filled && pos != 0)
                         {
-                            var stopOrderId = _algoStopOrders.Create(order, order.Price + _stopOrderOffset, order.Price + _stopOrderOffset + _offset, _isTrailing);
+                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, order.Price + _stopOrderOffset, order.Price + _stopOrderOffset + _offset, _isTrailing);
                             MessageToLog($"Algo stop order ID{stopOrderId} - stop price {order.Price + _stopOrderOffset}, order price {order.Price + _stopOrderOffset + _offset}");
                         }
 

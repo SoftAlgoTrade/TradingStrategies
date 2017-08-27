@@ -33,12 +33,12 @@ namespace Arbitrage
             _futuresSma.Reset();
         }
 
-        protected override decimal OnAdd(Trade tick)
+        protected override decimal OnAdd(Trade value)
         {
-            if (tick.Security.InitialMargin > 0)
-                _futuresPrice = _futuresSma.Add(tick.Price);
+            if (value.Security.InitialMargin > 0)
+                _futuresPrice = _futuresSma.Add(value.Price);
             else
-                _stockPrice = _stockSma.Add(tick.Price*tick.Security.LotSize);
+                _stockPrice = _stockSma.Add(value.Price*value.Security.LotSize);
 
             if (_stockSma.IsFormed && _futuresSma.IsFormed)
             {
@@ -68,12 +68,12 @@ namespace Arbitrage
             _futuresSma.Reset();
         }
 
-        protected override decimal OnAdd(Candle candle)
+        protected override decimal OnAdd(Candle value)
         {
-            if (candle.Security.InitialMargin > 0)
-                _futuresPrice = _futuresSma.Add(candle.ClosePrice);
+            if (value.Security.InitialMargin > 0)
+                _futuresPrice = _futuresSma.Add(value.ClosePrice);
             else
-                _stockPrice = _stockSma.Add(candle.ClosePrice * candle.Security.LotSize);
+                _stockPrice = _stockSma.Add(value.ClosePrice * value.Security.LotSize);
 
             if (_stockSma.IsFormed && _futuresSma.IsFormed)
             {

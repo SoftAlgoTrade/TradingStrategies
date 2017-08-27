@@ -25,10 +25,10 @@ namespace Arbitrage
 
         protected override void OnReset(){ }
 
-        protected override decimal OnAdd(Trade tick)
+        protected override decimal OnAdd(Trade value)
         {
-            if (tick.Security.InitialMargin > 0)
-                _lastValue = tick.Price*_volume;
+            if (value.Security.InitialMargin > 0)
+                _lastValue = value.Price*_volume;
 
             return _lastValue;
         }
@@ -47,10 +47,10 @@ namespace Arbitrage
 
         protected override void OnReset() { }
 
-        protected override decimal OnAdd(Trade tick)
+        protected override decimal OnAdd(Trade value)
         {
-            if (tick.Security.InitialMargin == 0)
-                _lastValue = tick.Price * tick.Security.LotSize* _volume;
+            if (value.Security.InitialMargin == 0)
+                _lastValue = value.Price * value.Security.LotSize* _volume;
 
             return _lastValue;
         }
@@ -69,10 +69,10 @@ namespace Arbitrage
 
         protected override void OnReset() { }
 
-        protected override decimal OnAdd(Candle candle)
+        protected override decimal OnAdd(Candle value)
         {
-            if (candle.Security.InitialMargin > 0)
-                _lastValue = candle.ClosePrice*_volume;
+            if (value.Security.InitialMargin > 0)
+                _lastValue = value.ClosePrice*_volume;
 
             return _lastValue;
         }
@@ -91,10 +91,10 @@ namespace Arbitrage
 
         protected override void OnReset() { }
 
-        protected override decimal OnAdd(Candle candle)
+        protected override decimal OnAdd(Candle value)
         {
-            if (candle.Security.InitialMargin == 0)
-                _lastValue = candle.ClosePrice * candle.Security.LotSize* _volume;
+            if (value.Security.InitialMargin == 0)
+                _lastValue = value.ClosePrice * value.Security.LotSize* _volume;
 
             return _lastValue;
         }

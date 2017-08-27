@@ -126,10 +126,30 @@ namespace DonchianChannel
         {
             //Используем алгоритмические стоп заявки
             _algoStopOrders = new AlgoStopOrders();
-            //Регистрируем лимитные заявки сгенерированные алгоритмическими стоп заявками
-            _algoStopOrders.LimitOrder += limitOrder => RegisterOrder(limitOrder);
+            //Выводим в лог сообщение об активации алгоритмической стоп заявки
+            _algoStopOrders.Activated += (id, stopPrice) => MessageToLog($"Activated Stop Order ID{id} - Stop Price {stopPrice}");
             //Выводим в лог сообщение о снятии алгоритмической стоп заявки
-            _algoStopOrders.Cancelled += orderId => MessageToLog($"Algo stop order ID{orderId} cancelled");
+            _algoStopOrders.Cancelled += (stopPrice, id) => MessageToLog($"Cancelled Stop Order ID{id} - StopPrice {stopPrice}");
+            //Выводим в лог сообщение об изменеии трейлинг стоп заявки
+            _algoStopOrders.TrailingPriceChanged += (id, stopPrice, price) => MessageToLog($"Trailing Price Changed Stop Order ID{id} - stop price {stopPrice}, order price {price}");
+            //Алгоритмическая стоп-заявка исполнилась
+            _algoStopOrders.Filled += (price, volume, direction, comment, id) =>
+            {
+                MessageToLog($"Filled Stop Order ID{id} - {direction}, {comment}");
+
+                //Создаем лимитную заявку для закрытия позиции
+                var limitOrder = new Order
+                {
+                    Type = OrderType.Limit,
+                    Direction = direction,
+                    Volume = volume,
+                    Price = price,
+                    Comment = comment
+                };
+
+                //Закрываем позицию
+                RegisterOrder(limitOrder);
+            };
         }
 
         //Устанавливаем параметры для стратегии
@@ -272,7 +292,7 @@ namespace DonchianChannel
                         if (newOrder.State == OrderState.Filled && pos != 0)
                         {
                             var stopPrice = newOrder.Price - atr*_atrStop;
-                            var stopOrderId = _algoStopOrders.Create(order, stopPrice, stopPrice - _offset, false);
+                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, stopPrice, stopPrice - _offset, false);
                             MessageToLog($"Created algorithmic stop order ID{stopOrderId} - stop price {stopPrice}, order price {stopPrice - _offset}");
                         }
                     };
@@ -302,7 +322,7 @@ namespace DonchianChannel
                         if (newOrder.State == OrderState.Filled && pos != 0)
                         {
                             var stopPrice = newOrder.Price + atr*_atrStop;
-                            var stopOrderId = _algoStopOrders.Create(order, stopPrice, stopPrice + _offset, false);
+                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, stopPrice, stopPrice + _offset, false);
                             MessageToLog($"Create algorithmic stop order ID{stopOrderId} - stop price {stopPrice}, order price {stopPrice + _offset}");
                         }
                     };

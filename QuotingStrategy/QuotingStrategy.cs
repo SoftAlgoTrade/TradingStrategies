@@ -34,7 +34,7 @@ namespace QuotingStrategy
     
     public class QuotingStrategy : IStrategy
     {
-        private TwoCombinedIndicators<decimal> _emaRsi;
+        private MultiIndicator<decimal> _emaRsi;
         private decimal _maxLevel;
         private decimal _minLevel;
         private int _volume;
@@ -51,7 +51,7 @@ namespace QuotingStrategy
             try
             {
                 //Создаем комбинированный индикатор: RSI сглаженный EMA 
-                _emaRsi = new TwoCombinedIndicators<decimal>(new EMA((int) Parameter(1)), new RSI((int) Parameter(2)));
+                _emaRsi = new MultiIndicator<decimal>(new RSI((int)Parameter(2)), new List<IIndicator<decimal>> {new EMA((int)Parameter(1))});
 
                 //Уровни пробоя
                 _maxLevel = Parameter(3);
@@ -127,7 +127,7 @@ namespace QuotingStrategy
             _quoting.Stopped += () => MessageToLog("Quoting stopped");
             _quoting.MaxQuotingTimeExpired += MessageToLog;
             _quoting.Errors += MessageToLog;
-            _quoting.Complete += () => MessageToLog("Quoting complete");
+            _quoting.Complete += (a1, a2) => MessageToLog("Quoting complete");
 
             _quoting.OrderChanged += (price, volume) =>
             {
@@ -146,7 +146,7 @@ namespace QuotingStrategy
                 new Parameter("EMA period", 5) {Comment = "Period EMA indicator"},
                 new Parameter("RSI period", 14) {Comment = "Period RSI indicator"},
                 new Parameter("Max level, %", 70) {Comment = "Max level line"},
-                new Parameter("Max level, %", 30) {Comment = "Min level line"},
+                new Parameter("Min level, %", 30) {Comment = "Min level line"},
                 new Parameter("Volume", 5) {Comment = "Order volume"},
                 new Parameter("Price offset", 10) {Comment = "Price offset in a market depth in the number of security tick."},
                 new Parameter("Max frequency moving order", 10) {Comment = "Maximum frequency of moving order in seconds."},
@@ -182,7 +182,7 @@ namespace QuotingStrategy
                         Stroke = Colors.Goldenrod,
                         Thickness = 2
                     },
-                    new AnalyzerIndicator(new TwoCombinedIndicators<decimal>(new EMA((int) Parameter(1)), new RSI((int) Parameter(2))), AnalyzerValue.TradePrice, 1)
+                    new AnalyzerIndicator(new MultiIndicator<decimal>(new RSI((int)Parameter(2)), new List<IIndicator<decimal>> {new EMA((int)Parameter(1))}), AnalyzerValue.TradePrice, 1)
                     {
                         Name = "EMA-RSI",
                         Stroke = Colors.DarkViolet,
@@ -220,7 +220,7 @@ namespace QuotingStrategy
                         Stroke = Colors.Goldenrod,
                         Thickness = 2
                     },
-                    new AnalyzerIndicator(new TwoCombinedIndicators<decimal>(new EMA((int) Parameter(1)), new RSI((int) Parameter(2))), AnalyzerValue.CandleClosePrice, 1)
+                    new AnalyzerIndicator(new MultiIndicator<decimal>(new RSI((int)Parameter(2)), new List<IIndicator<decimal>> {new EMA((int)Parameter(1))}), AnalyzerValue.CandleClosePrice, 1)
                     {
                         Name = "EMA-RSI",
                         Stroke = Colors.DarkViolet,

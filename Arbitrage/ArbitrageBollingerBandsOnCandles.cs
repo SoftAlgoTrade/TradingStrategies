@@ -30,12 +30,12 @@ namespace Arbitrage
             _bollingerBandsTop.Reset();
         }
 
-        protected override decimal OnAdd(Candle candle)
+        protected override decimal OnAdd(Candle value)
         {
-            if (candle.Security.InitialMargin > 0)
-                _futures = candle.ClosePrice;
+            if (value.Security.InitialMargin > 0)
+                _futures = value.ClosePrice;
             else
-                _stock = candle.ClosePrice * candle.Security.LotSize;
+                _stock = value.ClosePrice * value.Security.LotSize;
 
             if (_stock != 0 && _futures != 0)
                 return _bollingerBandsTop.Add(_futures - _stock);
@@ -61,12 +61,12 @@ namespace Arbitrage
             _bollingerBandsAverage.Reset();
         }
 
-        protected override decimal OnAdd(Candle candle)
+        protected override decimal OnAdd(Candle value)
         {
-            if (candle.Security.InitialMargin > 0)
-                _futures = candle.ClosePrice;
+            if (value.Security.InitialMargin > 0)
+                _futures = value.ClosePrice;
             else
-                _stock = candle.ClosePrice * candle.Security.LotSize;
+                _stock = value.ClosePrice * value.Security.LotSize;
 
             if (_stock != 0 && _futures != 0)
                 return _bollingerBandsAverage.Add(_futures - _stock);
@@ -92,12 +92,12 @@ namespace Arbitrage
             _bollingerBandsBottom.Reset();
         }
 
-        protected override decimal OnAdd(Candle candle)
+        protected override decimal OnAdd(Candle value)
         {
-            if (candle.Security.InitialMargin > 0)
-                _futures = candle.ClosePrice;
+            if (value.Security.InitialMargin > 0)
+                _futures = value.ClosePrice;
             else
-                _stock = candle.ClosePrice * candle.Security.LotSize;
+                _stock = value.ClosePrice * value.Security.LotSize;
 
             if (_stock != 0 && _futures != 0)
                 return _bollingerBandsBottom.Add(_futures - _stock);
