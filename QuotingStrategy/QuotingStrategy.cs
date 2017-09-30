@@ -107,7 +107,7 @@ namespace QuotingStrategy
             if (StrategyMode == StrategyMode.Trading)
             {
                 //Подписываемся на изменение биржевого стакана
-                MarketDepthChanged += _quoting.Add;
+                MarketDepthChanged += md => _quoting.Add(md);
             }
         }
 
@@ -148,9 +148,9 @@ namespace QuotingStrategy
                 new Parameter("Max level, %", 70) {Comment = "Max level line"},
                 new Parameter("Min level, %", 30) {Comment = "Min level line"},
                 new Parameter("Volume", 5) {Comment = "Order volume"},
-                new Parameter("Price offset", 10) {Comment = "Price offset in a market depth in the number of security tick."},
-                new Parameter("Max frequency moving order", 10) {Comment = "Maximum frequency of moving order in seconds."},
-                new Parameter("Max quoting time", 60) {Comment = "Maximum quoting time in seconds."}
+                new Parameter("Price offset", 10) {Comment = "Price offset in a market depth in the number of security tick"},
+                new Parameter("Max frequency moving order", 10) {Comment = "Maximum frequency of moving order in seconds"},
+                new Parameter("Max quoting time", 60) {Comment = "Maximum quoting time in seconds"}
             };
         }
 

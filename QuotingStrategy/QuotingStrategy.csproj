@@ -31,7 +31,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
-    <Reference Include="SAT.Algo">
+    <Reference Include="SAT.Algo, Version=4.0.6480.32223, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Documents\SoftAlgoTrade\References\SAT.Algo.dll</HintPath>
     </Reference>
     <Reference Include="SAT.Indicators">

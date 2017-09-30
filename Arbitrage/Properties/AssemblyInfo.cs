@@ -8,5 +8,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyrightAttribute("Copyright SoftAlgoTrade © 2014-2017")]
 [assembly: AssemblyTrademarkAttribute("softalgotrade.com")]
 [assembly: ComVisibleAttribute(false)]
-[assembly: AssemblyVersion("3.0.*")]
+[assembly: AssemblyVersion("4.0.*")]
 

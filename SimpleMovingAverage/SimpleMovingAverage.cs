@@ -228,13 +228,7 @@ namespace SimpleMovingAverage
                 //и предыдущее положение было обратным, то короткая пересекла длинную SMA - Покупаем!
                 if (stateSma >= 0 && _lastSma < 0 && position <= 0)
                 {
-                    var limitOrder = new Order
-                    {
-                        Type = OrderType.Limit,
-                        Direction = Direction.Buy,
-                        Volume = position < 0 ? -position : _volume, //Закрываем полностью позицию или открываем новую
-                        Price = candle.ClosePrice
-                    };
+                    var limitOrder = GetLimitOrder(Direction.Buy, position, candle.ClosePrice);
 
                     //Подписываемся на событие изменения заявки
                     limitOrder.OrderChanged += order =>
@@ -245,7 +239,7 @@ namespace SimpleMovingAverage
                         //Если заявка исполнилась, то защищаем ее алгоритмической стоп заявкой
                         if (order.State == OrderState.Filled && pos != 0)
                         {
-                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, order.Price - _stopOrderOffset, order.Price - _stopOrderOffset - _offset, _isTrailing);
+                            var stopOrderId = _algoStopOrders.Activate(order.Volume, order.Direction, order.Price - _stopOrderOffset, order.Price - _stopOrderOffset - _offset, _isTrailing);
                             MessageToLog($"Algo stop order ID{stopOrderId} - stop price {order.Price - _stopOrderOffset}, order price {order.Price - _stopOrderOffset - _offset}");
                         }
 
@@ -265,13 +259,7 @@ namespace SimpleMovingAverage
                 //и предыдущее положение было обратным, то длинная пересекла короткую SMA - Продаем!
                 if (stateSma <= 0 && _lastSma > 0 && position >= 0)
                 {
-                    var limitOrder = new Order()
-                    {
-                        Type = OrderType.Limit,
-                        Direction = Direction.Sell,
-                        Volume = position < 0 ? -position : _volume,
-                        Price = candle.ClosePrice
-                    };
+                    var limitOrder = GetLimitOrder(Direction.Sell, position, candle.ClosePrice);
 
                     //Подписываемся на событие изменения заявки
                     limitOrder.OrderChanged += order =>
@@ -282,7 +270,7 @@ namespace SimpleMovingAverage
                         //Если заявка исполнилась, то защищаем ее алгоритмической стоп заявкой
                         if (order.State == OrderState.Filled && pos != 0)
                         {
-                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, order.Price + _stopOrderOffset, order.Price + _stopOrderOffset + _offset, _isTrailing);
+                            var stopOrderId = _algoStopOrders.Activate(order.Volume, order.Direction, order.Price + _stopOrderOffset, order.Price + _stopOrderOffset + _offset, _isTrailing);
                             MessageToLog($"Algo stop order ID{stopOrderId} - stop price {order.Price + _stopOrderOffset}, order price {order.Price + _stopOrderOffset + _offset}");
                         }
 
@@ -306,6 +294,27 @@ namespace SimpleMovingAverage
             {
                 ExceptionMessage(ex, "ProcessCandle");
             }
+        }
+
+        //Создаем лимитную заявку
+        private Order GetLimitOrder(Direction direction, decimal position, decimal price)
+        {
+            return new Order
+            {
+                Type = OrderType.Limit,
+                Direction = direction,
+                Volume = GetVolume(direction, position),
+                Price = price
+            };
+        }
+
+        //Рассчитываем объем заявки
+        private decimal GetVolume(Direction direction, decimal position)
+        {
+            if (position < 0 && direction == Direction.Buy) return -position;
+            if (position > 0 && direction == Direction.Sell) return position;
+
+            return _volume;
         }
 
         //Обработка алгоритмических заявок

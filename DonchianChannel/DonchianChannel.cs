@@ -292,7 +292,7 @@ namespace DonchianChannel
                         if (newOrder.State == OrderState.Filled && pos != 0)
                         {
                             var stopPrice = newOrder.Price - atr*_atrStop;
-                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, stopPrice, stopPrice - _offset, false);
+                            var stopOrderId = _algoStopOrders.Activate(order.Volume, order.Direction, stopPrice, stopPrice - _offset, false);
                             MessageToLog($"Created algorithmic stop order ID{stopOrderId} - stop price {stopPrice}, order price {stopPrice - _offset}");
                         }
                     };
@@ -322,7 +322,7 @@ namespace DonchianChannel
                         if (newOrder.State == OrderState.Filled && pos != 0)
                         {
                             var stopPrice = newOrder.Price + atr*_atrStop;
-                            var stopOrderId = _algoStopOrders.Activate(order.Price, order.Volume, order.Direction, stopPrice, stopPrice + _offset, false);
+                            var stopOrderId = _algoStopOrders.Activate(order.Volume, order.Direction, stopPrice, stopPrice + _offset, false);
                             MessageToLog($"Create algorithmic stop order ID{stopOrderId} - stop price {stopPrice}, order price {stopPrice + _offset}");
                         }
                     };

@@ -38,7 +38,7 @@ namespace TurtleTraders
     // 1) Стратегия интрадей. Торгуем с 10:05, в конце торговой сессии (23:40) закрываем все открытые позиции - метод CheckIntraDayTime().
     // 2) При входе/выходе ориентируемся на риск, который рассчитываем по формуле: risk = k * atr,
     // Где к - коэффициент риска, atr - текущее значение индикатора ATR.
-    // 3) Для расчета стоп заявок используем соответствующие методы MarkуtToMarket для тиков и свечек.
+    // 3) Для расчета стоп заявок используем соответствующие методы MarketToMarket для тиков и свечек.
     // 4) Объем входа в позицию рассчитываем по формуле:
     // Volume = Math.Min(currentFunds * riskPerTrade / risk, currentFunds / initialMargin), 
     // Где currentFunds - текущие доступные денежные средства, initialMargin - гарантийное обеспечение
@@ -233,7 +233,7 @@ namespace TurtleTraders
                 if (!CheckIntraDayTime(tick.Time.TimeOfDay, position, lastPrice)) return;
 
                 //Stop-Loss
-                MarkуtToMarketTicks(tick, position, lastPrice);
+                MarketToMarketTicks(tick, position, lastPrice);
 
                 //Entry
                 if (tick.Price > _upperChannelOne.LastValue && position == 0 && _filled)
@@ -323,7 +323,7 @@ namespace TurtleTraders
             }
         }
 
-        private void MarkуtToMarketTicks(Trade tick, decimal position, decimal lastPrice)
+        private void MarketToMarketTicks(Trade tick, decimal position, decimal lastPrice)
         {
             try
             {
@@ -358,7 +358,7 @@ namespace TurtleTraders
             }
             catch (Exception ex)
             {
-                ExceptionMessage(ex, "MarkуеToMarketTicks");
+                ExceptionMessage(ex, "MarketToMarketTicks");
             }
         }
 
