@@ -83,7 +83,7 @@ namespace DonchianChannel
                 _volume = (int) Parameter(6);
 
                 //Для выставления лимитных заявок в рынок для гарантированного исполнения
-                _offset = GetSecurity().Tick*10;
+                _offset = GetSecurity().Tick*50;
 
                 //Инициализируем алгоритмические заявки
                 InitializationAlgoOrders();

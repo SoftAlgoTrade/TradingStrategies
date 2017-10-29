@@ -97,7 +97,7 @@ namespace QuotingStrategy
             //Подписываемся на тики
             NewTick += tick =>
             {
-                if (HistoricalDataType == HistoricalDataType.Ticks)
+                if (HistoricalDataType == HistoricalDataType.Ticks || HistoricalDataType == HistoricalDataType.None)
                 {
                     _lastTime = tick.Time;
                     _quoting.Add(tick);
